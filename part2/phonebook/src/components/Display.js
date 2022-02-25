@@ -10,7 +10,9 @@ const Display = ({ contactToShow }) => {
 
 const Person = ({ person }) => {
     return (
-        <p>{person.name} {person.number}</p>
+        <div>
+            <p>{person.name} {person.number}</p>
+        </div>       
     )
 }
 
