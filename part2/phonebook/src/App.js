@@ -31,8 +31,19 @@ const App = () => {
         const check = persons.find(person => person.name === newName)
 
         if (check != undefined) {
-            window.alert(`${newName} is already added to phonebook`)
-        } else {
+
+            if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+                const existedContact = persons.filter(person => person.name === contactObject.name)
+                //const temp = persons.reduce((result, current) => current.name === contactObject.name? current : result, null)
+                //console.log(temp)
+                personService
+                    .update(existedContact[0].id, contactObject)
+                    .then(response => setPersons(persons.map(person => person.id === response.id? response : person)))
+                    .catch(error => console.log('update number fail'))
+            }
+        }
+
+        else {
             personService
                 .create(contactObject)
                 .then(response => {
@@ -55,11 +66,20 @@ const App = () => {
 
     //filter
     const filterContactName = (event) => {
-        //console.log(event.target.value)
         setFilterName(event.target.value)
     }
 
     const contactToShow = persons.filter(person => (person.name.toLowerCase()).includes(filterName.toLowerCase()))
+
+    //delete handle
+    const handleDelete = (person) => {
+        //console.log(person.id)
+        if (window.confirm(`Delete ${person.name}?`)) {
+            //console.log(person.id, 'will be delete after clicked')
+            personService.ContactDelete(person.id)
+            setPersons(persons.filter(n => n.id !== person.id))
+        }
+    }
 
     return (
         <div>
@@ -77,7 +97,7 @@ const App = () => {
             />
 
             <h2>Numbers</h2>
-            <Display contactToShow={contactToShow} />
+            <Display contactToShow={contactToShow} handleDelete={handleDelete} />
         </div>
     )
 }
