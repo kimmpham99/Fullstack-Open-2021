@@ -23,7 +23,13 @@ const App = () => {
     }
 
     const showCountryInfoHandle = (country) => {
-        setShowOnClick(showOnClick.concat(country.name.common))
+        if (showOnClick.includes(country.name.common)) {
+            setShowOnClick(showOnClick.filter(showing_country => showing_country !== country.name.common))
+        }
+
+        else {
+            setShowOnClick(showOnClick.concat(country.name.common))
+        }
     }
 
     const countryToShow = countries.filter(country => (country.name.common.toLowerCase()).includes(filterName.toLowerCase()))

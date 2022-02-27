@@ -1,3 +1,5 @@
+import Weather from "./Weather"
+
 const Display = ({ countryToShow, showCountryInfoHandle, showOnClick }) => {
     if (countryToShow.length > 10) {
         return (
@@ -38,7 +40,7 @@ const MatchCountries = ({ country, showCountryInfoHandle, showOnClick }) => {
                 <p>
                     {country.name.common}
                     <button onClick={() => showCountryInfoHandle(country)}>
-                        show
+                        hide
                     </button>
                 </p>
                 <CountryInformation country={country} />
@@ -71,6 +73,8 @@ const CountryInformation = ({ country }) => {
             </ul>
 
             <img src={country.flags.png} />
+
+            <Weather country={country}/>
         </div>
     )
 }
