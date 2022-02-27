@@ -4,13 +4,16 @@ import Display from './components/Display'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
     const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [filterName, setFilterName] = useState('')
+    const [message, setMessage] = useState('Notifications will apear here!')
 
+    //load data from json-server
     useEffect(() => {
         personService
             .getAll()
@@ -38,8 +41,19 @@ const App = () => {
                 //console.log(temp)
                 personService
                     .update(existedContact[0].id, contactObject)
-                    .then(response => setPersons(persons.map(person => person.id === response.id? response : person)))
-                    .catch(error => console.log('update number fail'))
+                    .then(response => setPersons(persons.map(person => person.id === response.id ? response : person)))
+                    .catch(() => {
+                        setMessage(`Information of ${contactObject.name} has already been removed from server!`)
+                        setPersons(persons.filter(n => n.id !== existedContact[0].id))
+                        setNewName('')
+                        setNewNumber('')
+                    })
+
+                //toggle update number contact notification for 5 second
+                setMessage(`Updated ${contactObject.name}'s phone number!`)
+                setTimeout(() => {
+                    setMessage(null)
+                }, 5000)
             }
         }
 
@@ -51,32 +65,45 @@ const App = () => {
                     setNewName('')
                     setNewNumber('')
                 })
+
+            //toggle add contact notification for 5 second
+            setMessage(`Added ${contactObject.name}!`)
+            setTimeout(() => {
+                setMessage(null)
+            }, 5000)
         }
     }
 
-    //trace change in name input
+    //tracking change in name input
     const handleContactNameChange = (event) => {
         setNewName(event.target.value)
     }
 
-    //trace change in number input
+    //tracking change in number input
     const handleContactNumberChange = (event) => {
         setNewNumber(event.target.value)
     }
 
-    //filter
+    //filter search
     const filterContactName = (event) => {
         setFilterName(event.target.value)
     }
 
     const contactToShow = persons.filter(person => (person.name.toLowerCase()).includes(filterName.toLowerCase()))
 
-    //delete handle
+    //deleteContact handle
     const handleDelete = (person) => {
         //console.log(person.id)
         if (window.confirm(`Delete ${person.name}?`)) {
             //console.log(person.id, 'will be delete after clicked')
             personService.ContactDelete(person.id)
+
+            //toggle delete contact notification for 5 second
+            setMessage(`Deleted ${person.name}!`)
+            setTimeout(() => {
+                setMessage(null)
+            }, 5000)
+
             setPersons(persons.filter(n => n.id !== person.id))
         }
     }
@@ -85,6 +112,7 @@ const App = () => {
         <div>
             <h2>Phonebook</h2>
 
+            <Notification message={message} />
             <Filter filterName={filterName} filterContactName={filterContactName} />
 
             <h2>add a new</h2>
