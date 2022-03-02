@@ -3,18 +3,17 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express()
 
-//app.use(morgan('tiny'))
+app.use(morgan('tiny'))
 
 app.use(morgan((tokens, request, response) => {
     return tokens.dataPost(request, response)
 }))
 
 morgan.token('dataPost', (request, response) => {
-    console.log(resquest)
     if (request.method !== 'POST') {
         return null;
     }
-    return JSON.stringify(response.body)
+    return JSON.stringify(request.body)
 })
 
 let persons = [
