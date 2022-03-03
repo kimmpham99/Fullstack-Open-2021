@@ -1,8 +1,16 @@
 const { response, request } = require('express')
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 const app = express()
 
+//connect front-end (port 3000) with back-end (port 3001)
+app.use(cors())
+
+//first check 'build' directory to deploy fullstack on Heroku
+app.use(express.static('build'))
+
+//middleware
 app.use(morgan('tiny'))
 
 app.use(morgan((tokens, request, response) => {
@@ -105,7 +113,7 @@ app.post('/api/persons', (request, response) => {
     response.json(newContact)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
