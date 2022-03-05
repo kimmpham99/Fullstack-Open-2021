@@ -6,7 +6,7 @@ const cors = require('cors')
 const app = express()
 
 //create database module
-const Person = require('./models/note')
+const Contact = require('./models/note')
 
 //connect front-end (port 3000) with back-end (port 3001)
 app.use(cors())
@@ -28,7 +28,7 @@ morgan.token('dataPost', (request, response) => {
     return JSON.stringify(request.body)
 })
 
-let persons = [
+let contacts = [
     {
         "id": 1,
         "name": "Arto Hellas",
@@ -54,36 +54,29 @@ let persons = [
 app.get('/info', (request, response) => {
     response.send(
         `<div>
-            <p>Phone book has info for ${persons.length} people</p>
+            <p>Phone book has info for ${contacts.length} people</p>
             <p>${new Date()}</p>
         </div>`
     )
 })
 
-/*app.get('/api/persons', (request, response) => {
-    response.json(persons)
-    //console.log()
-})*/
-
+//fetch all data from database
 app.get('/api/persons', (request, response) => {
-    Person.find({}).then(persons => {
-        response.json(persons)
+    Contact.find({}).then(contacts => {
+        response.json(contacts)
     })
 })
 
+//fetch data by ID
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    if (person) {
-        response.json(person)
-    } else {
-        response.status(404).end()
-    }
+    Contact.findById(request.params.id).then(contact => {
+        response.json(contact)
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
-    persons = persons.filter(person =>
+    contacts = contacts.filter(person =>
         person.id === id ?
             null :
             person
@@ -94,10 +87,6 @@ app.delete('/api/persons/:id', (request, response) => {
 
 app.use(express.json())
 
-const getRandomInt = (max) => {
-    return Math.floor(Math.random() * max)
-}
-
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
@@ -107,20 +96,20 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
-    if (persons.find(person => person.name === body.name)) {
+    if (contacts.find(person => person.name === body.name)) {
         return response.status(404).json({
             error: 'name must be unique'
         })
     }
 
-    const newContact = {
+    const newContact = new Contact({
         name: body.name,
-        number: body.number,
-        id: getRandomInt(Math.pow(10, 9))
-    }
+        number: body.number
+    })
 
-    persons = persons.concat(newContact)
-    response.json(newContact)
+    newContact.save().then(savedContact => {
+        response.json(savedContact)
+    })
 })
 
 const PORT = process.env.PORT
