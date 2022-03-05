@@ -1,13 +1,17 @@
+require('dotenv').config()
 const { response, request } = require('express')
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 
+//create database module
+const Person = require('./models/note')
+
 //connect front-end (port 3000) with back-end (port 3001)
 app.use(cors())
 
-//first check 'build' directory to deploy fullstack on Heroku
+//first check 'build' directory to deploy fullstack on Heroku (to deploy front-end)
 app.use(express.static('build'))
 
 //middleware
@@ -56,9 +60,15 @@ app.get('/info', (request, response) => {
     )
 })
 
-app.get('/api/persons', (request, response) => {
+/*app.get('/api/persons', (request, response) => {
     response.json(persons)
     //console.log()
+})*/
+
+app.get('/api/persons', (request, response) => {
+    Person.find({}).then(persons => {
+        response.json(persons)
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -113,7 +123,7 @@ app.post('/api/persons', (request, response) => {
     response.json(newContact)
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
