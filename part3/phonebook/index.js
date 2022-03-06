@@ -14,7 +14,10 @@ app.use(cors())
 //first check 'build' directory to deploy fullstack on Heroku (to deploy front-end)
 app.use(express.static('build'))
 
-//middleware
+//middleware parse data to json format
+app.use(express.json())
+
+//--------------middleware morgan----------------
 app.use(morgan('tiny'))
 
 app.use(morgan((tokens, request, response) => {
@@ -27,8 +30,10 @@ morgan.token('dataPost', (request, response) => {
     }
     return JSON.stringify(request.body)
 })
+//------------------------------------------------
 
-let contacts = [
+//hardcoded data
+/*let contacts = [
     {
         "id": 1,
         "name": "Arto Hellas",
@@ -49,15 +54,17 @@ let contacts = [
         "name": "Mary Poppendieck",
         "number": "39-23-6423122"
     }
-]
+]*/
 
 app.get('/info', (request, response) => {
-    response.send(
-        `<div>
-            <p>Phone book has info for ${contacts.length} people</p>
-            <p>${new Date()}</p>
-        </div>`
-    )
+    Contact.find({}).then(contacts => {
+        response.send(
+            `<div>
+                <p>Phone book has info for ${contacts.length} people</p>
+                <p>${new Date()}</p>
+            </div>`
+        )
+    })
 })
 
 //fetch all data from database
@@ -68,37 +75,34 @@ app.get('/api/persons', (request, response) => {
 })
 
 //fetch data by ID
-app.get('/api/persons/:id', (request, response) => {
-    Contact.findById(request.params.id).then(contact => {
-        response.json(contact)
-    })
+app.get('/api/persons/:id', (request, response, next) => {
+    Contact.findById(request.params.id)
+        .then(contact => {
+            if (contact) {
+                response.json(contact)
+            } else {
+                response.status(404).end()
+            }
+        })
+        .catch(error => { next(error) })
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    contacts = contacts.filter(person =>
-        person.id === id ?
-            null :
-            person
-    )
-
-    response.status(204).end()
+//delelte data out of database
+app.delete('/api/persons/:id', (request, response, next) => {
+    Contact.findByIdAndRemove(request.params.id)
+        .then(result => {
+            response.status(204).end()
+        })
+        .catch(error => next(error))
 })
 
-app.use(express.json())
-
+//add new data to database
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
     if (!body.name || !body.number) {
         return response.status(404).json({
             error: 'name or number is missing'
-        })
-    }
-
-    if (contacts.find(person => person.name === body.name)) {
-        return response.status(404).json({
-            error: 'name must be unique'
         })
     }
 
@@ -111,6 +115,44 @@ app.post('/api/persons', (request, response) => {
         response.json(savedContact)
     })
 })
+
+//update existing contact
+app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body
+
+    const updateContact = {
+        name: body.name,
+        number: body.number
+    }
+
+    Contact.findByIdAndUpdate(request.params.id, updateContact, { new: true })
+        .then(updatedContact => {
+            response.json(updatedContact)
+        })
+        .catch(error => next(error))
+})
+
+//-----middleware handles requests with unknown endpoint-----
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+//-----------------------------------------------------------
+
+//------middleware error handlers (need to be last loaded)------------
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id' })
+    }
+
+    next(error)
+}
+
+app.use(errorHandler)
+//---------------------------------------------------------------------
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
