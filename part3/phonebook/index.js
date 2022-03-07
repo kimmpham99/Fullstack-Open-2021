@@ -3,37 +3,36 @@ const { response, request } = require('express')
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+
 const app = express()
 
-//create database module
+// create database module
 const Contact = require('./models/note')
 
-//connect front-end (port 3000) with back-end (port 3001)
+// connect front-end (port 3000) with back-end (port 3001)
 app.use(cors())
 
-//first check 'build' directory to deploy fullstack on Heroku (to deploy front-end)
+// first check 'build' directory to deploy fullstack on Heroku (to deploy front-end)
 app.use(express.static('build'))
 
-//middleware parse data to json format
+// middleware parse data to json format
 app.use(express.json())
 
-//--------------middleware morgan----------------
+// --------------middleware morgan----------------
 app.use(morgan('tiny'))
 
-app.use(morgan((tokens, request, response) => {
-    return tokens.dataPost(request, response)
-}))
+app.use(morgan((tokens, request, response) => tokens.dataPost(request, response)))
 
 morgan.token('dataPost', (request, response) => {
     if (request.method !== 'POST') {
-        return null;
+        return null
     }
     return JSON.stringify(request.body)
 })
 //------------------------------------------------
 
-//hardcoded data
-/*let contacts = [
+// hardcoded data
+/* let contacts = [
     {
         "id": 1,
         "name": "Arto Hellas",
@@ -54,85 +53,91 @@ morgan.token('dataPost', (request, response) => {
         "name": "Mary Poppendieck",
         "number": "39-23-6423122"
     }
-]*/
+] */
 
 app.get('/info', (request, response) => {
-    Contact.find({}).then(contacts => {
+    Contact.find({}).then((contacts) => {
         response.send(
             `<div>
                 <p>Phone book has info for ${contacts.length} people</p>
                 <p>${new Date()}</p>
-            </div>`
+            </div>`,
         )
     })
 })
 
-//fetch all data from database
+// fetch all data from database
 app.get('/api/persons', (request, response) => {
-    Contact.find({}).then(contacts => {
+    Contact.find({}).then((contacts) => {
         response.json(contacts)
     })
 })
 
-//fetch data by ID
+// fetch data by ID
 app.get('/api/persons/:id', (request, response, next) => {
     Contact.findById(request.params.id)
-        .then(contact => {
+        .then((contact) => {
             if (contact) {
                 response.json(contact)
             } else {
                 response.status(404).end()
             }
         })
-        .catch(error => { next(error) })
+        .catch((error) => { next(error) })
 })
 
-//delelte data out of database
+// delelte data out of database
 app.delete('/api/persons/:id', (request, response, next) => {
     Contact.findByIdAndRemove(request.params.id)
-        .then(result => {
+        .then((result) => {
             response.status(204).end()
         })
-        .catch(error => next(error))
+        .catch((error) => next(error))
 })
 
-//add new data to database
-app.post('/api/persons', (request, response) => {
-    const body = request.body
+// add new data to database
+app.post('/api/persons', (request, response, next) => {
+    const { body } = request
 
     if (!body.name || !body.number) {
         return response.status(404).json({
-            error: 'name or number is missing'
+            error: 'name or number is missing',
         })
     }
 
     const newContact = new Contact({
         name: body.name,
-        number: body.number
+        number: body.number,
     })
 
-    newContact.save().then(savedContact => {
-        response.json(savedContact)
-    })
+    newContact.save()
+        .then((savedContact) => {
+            response.json(savedContact)
+        })
+        .catch((error) => next(error))
 })
 
-//update existing contact
+// update existing contact
 app.put('/api/persons/:id', (request, response, next) => {
-    const body = request.body
+    const { body } = request
 
     const updateContact = {
         name: body.name,
-        number: body.number
+        number: body.number,
     }
 
-    Contact.findByIdAndUpdate(request.params.id, updateContact, { new: true })
-        .then(updatedContact => {
+    Contact.findByIdAndUpdate(
+        request.params.id,
+        updateContact,
+        { new: true, runValidators: true, context: 'query' },
+    )
+        .then((updatedContact) => {
             response.json(updatedContact)
         })
-        .catch(error => next(error))
+        .catch((error) => next(error))
 })
 
-//-----middleware handles requests with unknown endpoint-----
+// -----middleware handles requests with unknown endpoint-----
 const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
 }
@@ -140,12 +145,14 @@ const unknownEndpoint = (request, response) => {
 app.use(unknownEndpoint)
 //-----------------------------------------------------------
 
-//------middleware error handlers (need to be last loaded)------------
+// ------middleware error handlers (need to be last loaded)------------
 const errorHandler = (error, request, response, next) => {
     console.error(error.message)
 
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
+    } if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
     }
 
     next(error)
@@ -154,7 +161,7 @@ const errorHandler = (error, request, response, next) => {
 app.use(errorHandler)
 //---------------------------------------------------------------------
 
-const PORT = process.env.PORT
+const { PORT } = process.env
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })

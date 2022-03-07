@@ -11,7 +11,7 @@ const Notification = ({ message }) => {
         return null
     }
 
-    else if (message.includes('removed')) {
+    else if (message.includes('validation')) {
         return (
             <div className="error_notification">
                 {message}

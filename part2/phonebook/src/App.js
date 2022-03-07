@@ -64,13 +64,21 @@ const App = () => {
                     setPersons(persons.concat(response))
                     setNewName('')
                     setNewNumber('')
-                })
 
-            //toggle add contact notification for 5 second
-            setMessage(`Added ${contactObject.name}!`)
-            setTimeout(() => {
-                setMessage(null)
-            }, 5000)
+                    //Display added success message
+                    setMessage(`Added ${contactObject.name}!`)
+                    setTimeout(() => {
+                        setMessage(null)
+                    }, 5000)                   
+                })
+                .catch(error => {
+
+                    //Display added error message
+                    setMessage(error.response.data.error)
+                    setTimeout(() => {
+                        setMessage(null)
+                    }, 5000)
+                })
         }
     }
 
