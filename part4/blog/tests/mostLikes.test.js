@@ -54,12 +54,20 @@ describe('most likes', () => {
   ]
 
   test('of blog has most likes', () => {
-    const result = list_helper.mostBlogs(blogs)
+    const result = list_helper.mostLikes(blogs)
     expect(result).toEqual(blogs.reduce((previous, current) => {
-      if(previous.likes > current.likes){
-        return previous
+      if (previous.likes > current.likes) {
+        return {
+          title: previous.title,
+          author: previous.author,
+          likes: previous.likes
+        }
       }
-      return current
-    }, {likes: 0}))
+      return {
+        title: current.title,
+        author: current.author,
+        likes: current.likes
+      }
+    }, { likes: 0 }))
   })
 })

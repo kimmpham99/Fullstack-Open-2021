@@ -6,25 +6,26 @@ const totalLikes = (blogsList) => {
   return blogsList.reduce((previous, current) => previous + current.likes, 0)
 }
 
-const mostBlogs = (blogsList) => {
-
-  console.log(blogsList.reduce((previous, current) => {
-    if (previous.likes > current.likes) {
-      return previous
-    }
-    return current
-  }, { likes: 0 }))
+const mostLikes = (blogsList) => {
 
   return blogsList.reduce((previous, current) => {
     if (previous.likes > current.likes) {
-      return previous
+      return {
+        title: previous.title,
+        author: previous.author,
+        likes: previous.likes
+      }
     }
-    return current
+    return {
+      title: current.title,
+      author: current.author,
+      likes: current.likes
+    }
   }, { likes: 0 })
 }
 
 module.exports = {
   dummy,
   totalLikes,
-  mostBlogs,
+  mostLikes,
 }
