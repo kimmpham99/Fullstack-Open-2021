@@ -1,6 +1,7 @@
 const list_helper = require('../utils/list_helper')
 
 describe('most likes', () => {
+
   const blogs = [
     {
       _id: "5a422a851b54a676234d17f7",
@@ -52,13 +53,15 @@ describe('most likes', () => {
     }
   ]
 
-  test('of author who has lagest amount of likes', () => {
-    const result = list_helper.mostLikes(blogs)
+  test('of blog has most likes', () => {
+
+    const result = list_helper.favoriteBlog(blogs)
 
     expect(result).toEqual(
       {
+        title: "Canonical string reduction",
         author: "Edsger W. Dijkstra",
-        likes: 17
+        likes: 12
       }
     )
   })
