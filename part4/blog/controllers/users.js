@@ -33,9 +33,14 @@ usersRouter.post('/', async (request, response) => {
     name,
   })
 
-  const savedUser = await user.save()
-
-  response.status(201).json(savedUser)
+  try {
+    const savedUser = await user.save()
+    response.status(201).json(savedUser)
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      return response.status(400).json({ error: error.message })
+    }
+  }
 })
 
 module.exports = usersRouter

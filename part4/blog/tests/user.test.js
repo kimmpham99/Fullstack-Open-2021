@@ -8,8 +8,9 @@ const api = supertest(app)
 
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const { response } = require('../app')
 
-describe('test for user', () => {
+describe('test for user database', () => {
   //hardcoded data for testing
   const initialUsers = [
     {
@@ -35,7 +36,7 @@ describe('test for user', () => {
     await user.save()
   })
 
-  //create a mew user
+  //create a mew valid user
   test('create a new user', async () => {
     const usersAtStart = await api.get('/api/users')
 
@@ -56,6 +57,26 @@ describe('test for user', () => {
 
     const usernames = usersAtEnd.body.map(userObject => userObject.username)
     expect(usernames).toContain(newUser.username)
+  })
+
+  //create an invalid user
+  test('create an invalid user', async () => {
+    const usersAtStart = await api.get('/api/users')
+
+    const newUser = {
+      username: "kimpa",
+      name: "Kim_Pham",
+      password: "kim31051999"
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await api.get('/api/users')
+    expect(usersAtEnd.body).toHaveLength(usersAtStart.body.length)
   })
 })
 
