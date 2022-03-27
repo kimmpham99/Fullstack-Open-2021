@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 
 const Login = ({ user, handleLogin, handleLogout }) => {
   const [username, setUsername] = useState('')

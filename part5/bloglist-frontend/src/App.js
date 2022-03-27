@@ -3,16 +3,36 @@ import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
 import Notification from './components/Notification'
+import AddNewBlog from './components/AddNewBlog'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-
   const [message, setMessage] = useState(null)
-
   const [user, setUser] = useState(null)
+
+  const handleAddBlog = async (title, author, url) => {
+    const newBlog = {
+      title: title,
+      author: author,
+      url: url
+    }
+
+    try {
+      const afterAddBlog = await blogService.create(newBlog)
+      setBlogs(blogs.concat(afterAddBlog))
+      setMessage(`a new blog ${title} by ${user.name} added`)
+    }
+
+    catch (exception) {
+      setMessage('blog add unsuccessfully')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    }
+  }
 
   const handleLogin = async (username, password) => {
 
@@ -25,10 +45,11 @@ const App = () => {
         'loggedBlogappUser', JSON.stringify(user)
       )
       setUser(user)
+      blogService.setToken(user.token)
     }
 
     catch (exception) {
-      setMessage('Wrong credentials')
+      setMessage('wrong username or password')
       setTimeout(() => {
         setMessage(null)
       }, 5000)
@@ -59,8 +80,8 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Login user={user} handleLogin={handleLogin} />
         <Notification message={message} />
+        <Login user={user} handleLogin={handleLogin} />
       </div>
     )
   }
@@ -68,8 +89,9 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Login user={user} handleLogout={handleLogout} />
       <Notification message={message} />
+      <Login user={user} handleLogout={handleLogout} />
+      <AddNewBlog handleAddBlog={handleAddBlog} />
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
