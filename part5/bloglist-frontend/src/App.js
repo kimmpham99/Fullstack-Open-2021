@@ -24,6 +24,9 @@ const App = () => {
       const afterAddBlog = await blogService.create(newBlog)
       setBlogs(blogs.concat(afterAddBlog))
       setMessage(`a new blog ${title} by ${user.name} added`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     }
 
     catch (exception) {

@@ -5,6 +5,14 @@ const Notification = ({ message }) => {
     return null
   }
 
+  if(message.includes("a new blog")){
+    return (
+      <div className='success'>
+        {message}
+      </div>
+    )
+  }
+
   return (
     <div className='error'>
       {message}
