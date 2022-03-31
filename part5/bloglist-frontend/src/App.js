@@ -4,6 +4,7 @@ import Blog from './components/Blog'
 import Login from './components/Login'
 import Notification from './components/Notification'
 import AddNewBlog from './components/AddNewBlog'
+import Togglable from './components/Togglable'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -12,6 +13,27 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [message, setMessage] = useState(null)
   const [user, setUser] = useState(null)
+
+  //sort blogs based on number of like
+  blogs.sort((a, b) => b.likes - a.likes)
+
+  const handleRemoveBlog = async(blog) => {
+    try {
+      const afterDeleteBlog = await blogService.remove(blog.id)
+      setBlogs(blogs.filter(blogObject => blogObject.id !== blog.id))
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleUpdateBlog = async (blog) => {
+    try {
+      const afterUpdateBlog = await blogService.update(blog, blog.id)
+      setBlogs(blogs.map(blogObject => blogObject.id === blog.id ? afterUpdateBlog : blogObject))
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const handleAddBlog = async (title, author, url) => {
     const newBlog = {
@@ -94,9 +116,16 @@ const App = () => {
       <h2>blogs</h2>
       <Notification message={message} />
       <Login user={user} handleLogout={handleLogout} />
-      <AddNewBlog handleAddBlog={handleAddBlog} />
+      <Togglable buttonLabel="create new blog">
+        <AddNewBlog handleAddBlog={handleAddBlog} />
+      </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          handleUpdateBlog={handleUpdateBlog}
+          handleRemoveBlog={handleRemoveBlog}
+        />
       )}
     </div>
   )
