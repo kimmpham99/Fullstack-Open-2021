@@ -17,7 +17,9 @@ const Blog = ({ blog, handleUpdateBlog, handleRemoveBlog }) => {
   }
 
   const handleRemove = () => {
-    handleRemoveBlog(blog)
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      handleRemoveBlog(blog)
+    }
   }
 
   let showButton = show === true? "hide" : "view"
