@@ -37,7 +37,7 @@ const Blog = ({ blog, handleUpdateBlog, handleRemoveBlog }) => {
   return (
     <div style={blogStyle}>
       <div style={hideWhenVisible}>
-        <p>
+        <p className='title'>
           {blog.title}
           <button onClick={handleClick}>{showButton}</button>
         </p>
