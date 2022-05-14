@@ -35,9 +35,9 @@ const Blog = ({ blog, handleUpdateBlog, handleRemoveBlog }) => {
   //console.log(blog)
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blogDetail'>
       <div style={hideWhenVisible}>
-        <p className='title'>
+        <p>
           {blog.title}
           <button onClick={handleClick}>{showButton}</button>
         </p>
