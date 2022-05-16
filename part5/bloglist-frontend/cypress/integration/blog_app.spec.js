@@ -37,4 +37,42 @@ describe('Blog app', function () {
       cy.contains('wrong username or password')
     })
   })
+
+  //5.19 - checking that a logged-in user can create a new blog
+  describe('When logged in', function () {
+    beforeEach(function () {
+      cy.get('#username').type('kimpatest')
+      cy.get('#password').type('kim31051999')
+      cy.get('#login-button').click()
+
+      cy.contains('Kim Pham Test logged in')
+    })
+
+    it('A blog can be created', function () {
+      cy.contains('create new blog').click()
+
+      const sampleBlog = {
+        likes: 0,
+        title: "Test title",
+        author: "kimpa",
+        url: "http://www.webTest.com",
+      }
+
+      cy.get('#title-input').type(sampleBlog.title)
+      cy.get('#author-input').type(sampleBlog.author)
+      cy.get('#url-input').type(sampleBlog.url)
+      cy.get('#create-button').click()
+
+      cy.get('.blogDetail').contains(sampleBlog.title)
+
+      //5.20 - checking that users can like a blog
+      cy.get('.blogDetail').contains('view').click()
+      cy.get('.blogDetail').contains('like').click()
+      cy.get('.blog-like').should('contain', (sampleBlog.likes + 1).toString())
+
+      //5.21 - checking that users can remove a blog
+      cy.get('.blogDetail').contains('remove').click()
+      cy.contains('blogs').parent().not(sampleBlog.title, 'contain')
+    })
+  })
 })
