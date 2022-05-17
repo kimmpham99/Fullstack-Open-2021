@@ -39,7 +39,7 @@ const Blog = ({ blog, handleUpdateBlog, handleRemoveBlog }) => {
       <div style={hideWhenVisible}>
         <p>
           {blog.title}
-          <button onClick={handleClick}>{showButton}</button>
+          <button id='view-button' onClick={handleClick}>{showButton}</button>
         </p>
       </div>
       <div style={showWhenVisible}>
