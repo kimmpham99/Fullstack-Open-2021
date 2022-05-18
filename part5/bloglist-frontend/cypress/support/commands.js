@@ -27,14 +27,14 @@
 Cypress.Commands.add('login', (loggingUser) => {
   cy.request('POST', 'http://localhost:3003/api/login', loggingUser)
     .then(response => {
-      localStorage.setItem('loggedBlogUser', JSON.stringify(response.body))
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(response.body))
       cy.visit('http://localhost:3000')
     })
 })
 
 Cypress.Commands.add('createBlog', (body) => {
   const headers = {
-    'Authorization': `bearer ${JSON.parse(localStorage.getItem('loggedBlogUser')).token}`
+    'Authorization': `bearer ${JSON.parse(window.localStorage.getItem('loggedBlogappUser')).token}`
   }
   cy.request({
     method: 'POST',

@@ -155,10 +155,6 @@ describe('Blog app', function () {
       cy.createBlog(sampleBlogs[0])
       cy.createBlog(sampleBlogs[1])
       cy.createBlog(sampleBlogs[2])
-            
-      cy.get('#username').type('kimpatest')
-      cy.get('#password').type('kim31051999')
-      cy.get('#login-button').click()
 
       //check order
       cy.get('.blogDetail').eq(0).contains('view').click()
