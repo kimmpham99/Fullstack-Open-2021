@@ -26,7 +26,7 @@
 
 Cypress.Commands.add('login', (loggingUser) => {
   cy.request('POST', 'http://localhost:3003/api/login', loggingUser)
-    .then(function (response) {
+    .then(response => {
       localStorage.setItem('loggedBlogUser', JSON.stringify(response.body))
       cy.visit('http://localhost:3000')
     })
@@ -38,7 +38,7 @@ Cypress.Commands.add('createBlog', (body) => {
   }
   cy.request({
     method: 'POST',
-    url: 'http://localhost:3000/api/blogs',
+    url: 'http://localhost:3003/api/blogs',
     body,
     headers
   })

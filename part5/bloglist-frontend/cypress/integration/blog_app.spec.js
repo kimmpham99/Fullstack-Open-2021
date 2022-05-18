@@ -122,7 +122,6 @@ describe('Blog app', function () {
   describe('blogs are ordered according to likes', function () {
 
     it('Blogs are ordered by likes', function () {
-      cy.get('logout').click()
 
       const userLogin = {
         username: 'kimpatest',
@@ -156,13 +155,17 @@ describe('Blog app', function () {
       cy.createBlog(sampleBlogs[0])
       cy.createBlog(sampleBlogs[1])
       cy.createBlog(sampleBlogs[2])
+            
+      cy.get('#username').type('kimpatest')
+      cy.get('#password').type('kim31051999')
+      cy.get('#login-button').click()
 
       //check order
-      cy.get('.blogDetail').eq(0).contains('view').click
+      cy.get('.blogDetail').eq(0).contains('view').click()
       cy.get('.blogDetail').eq(0).should('contain', '100')
-      cy.get('.blogDetail').eq(1).contains('view').click
+      cy.get('.blogDetail').eq(1).contains('view').click()
       cy.get('.blogDetail').eq(1).should('contain', '20')
-      cy.get('.blogDetail').eq(2).contains('view').click
+      cy.get('.blogDetail').eq(2).contains('view').click()
       cy.get('.blogDetail').eq(2).should('contain', '7')
     })
   })
