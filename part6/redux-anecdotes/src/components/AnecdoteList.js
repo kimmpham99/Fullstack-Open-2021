@@ -1,13 +1,21 @@
 import { toggleVote } from '../reducers/anecdoteReducer'
 import { useSelector, useDispatch } from 'react-redux'
+import { showNotification } from '../reducers/notificationReducer'
 
 const AnecdoteList = () => {
   const anecdotes = useSelector(state => state.anecdotes)
   const dispatch = useDispatch()
 
-  const vote = (id) => {
+  const vote = (id, content) => {
     dispatch(toggleVote(id))
-    console.log('vote', id)
+
+    dispatch(showNotification(`you voted '${content}'`))
+
+    setTimeout(() => {
+      dispatch(showNotification(''))
+    }, 5000);
+    
+    console.log('vote', id, content)
   }
 
   //sort anecdotes based on number of vote (can not sort directly the state array -> make a copy -> then sort)
@@ -23,7 +31,7 @@ const AnecdoteList = () => {
           </div>
           <div>
             has {anecdote.votes}
-            <button onClick={() => vote(anecdote.id)}>vote</button>
+            <button onClick={() => vote(anecdote.id, anecdote.content)}>vote</button>
           </div>
         </div>
       )}
