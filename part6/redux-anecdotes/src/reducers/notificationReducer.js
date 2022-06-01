@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-const notificationAtStart = 'Default notification!!!'
+const notificationAtStart = null
 
 const notificationSlice = createSlice({
   name: 'notification',
