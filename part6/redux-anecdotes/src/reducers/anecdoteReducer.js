@@ -19,19 +19,16 @@ const asObject = (anecdote) => {
   }
 }
 
+//hard-coded initial database while not connecting with json server
 const initialState = anecdotesAtStart.map(asObject)
 
 const anecdoteSlice = createSlice({
   name: 'anecdotes',
-  initialState: initialState,
+  initialState: [],
   reducers: {
     createAnecdote(state, action) {
       const content = action.payload
-      state.push({
-        content,
-        id: getId(),
-        votes: 0
-      })
+      state.push(content)
     },
     toggleVote(state, action) {
       const id = action.payload
@@ -41,11 +38,17 @@ const anecdoteSlice = createSlice({
         votes: anecdoteToChange.votes + 1
       }
       return state.map(anecdote => anecdote.id !== id ? anecdote : changedAnecdote)
+    },
+    appendAnecdote(state, action) {
+      state.push(action.payload)
+    },
+    setAnecdotes(state, action) {
+      return action.payload
     }
   }
 })
 
-export const { createAnecdote, toggleVote} = anecdoteSlice.actions
+export const { createAnecdote, toggleVote, appendAnecdote, setAnecdotes} = anecdoteSlice.actions
 export default anecdoteSlice.reducer
 
 /*const reducer = (state = initialState, action) => {
