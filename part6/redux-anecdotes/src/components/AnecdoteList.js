@@ -12,16 +12,16 @@ const AnecdoteList = () => {
   //filter
   const anecdoteToShow = anecdotes.filter(anecdote => (anecdote.content.toLowerCase()).includes(filter.toLowerCase()))
 
-  const vote = (id, content) => {
-    dispatch(toggleVote(id))
+  const vote = (anecdote) => {
+    dispatch(toggleVote(anecdote))
 
-    dispatch(showNotification(`you voted '${content}'`))
+    dispatch(showNotification(`you voted '${anecdote.content}'`))
 
     setTimeout(() => {
       dispatch(showNotification(''))
     }, 5000);
 
-    console.log('vote', id, content)
+    console.log('AnecdoteList.js: vote', anecdote)
   }
 
   //sort anecdotes based on number of vote (can not sort directly the state array -> make a copy -> then sort)
@@ -37,7 +37,7 @@ const AnecdoteList = () => {
           </div>
           <div>
             has {anecdote.votes}
-            <button onClick={() => vote(anecdote.id, anecdote.content)}>vote</button>
+            <button onClick={() => vote(anecdote)}>vote</button>
           </div>
         </div>
       )}

@@ -27,14 +27,9 @@ const anecdoteSlice = createSlice({
   name: 'anecdotes',
   initialState: [],
   reducers: {
-    toggleVote(state, action) {
-      const id = action.payload
-      const anecdoteToChange = state.find(n => n.id === id)
-      const changedAnecdote = {
-        ...anecdoteToChange,
-        votes: anecdoteToChange.votes + 1
-      }
-      return state.map(anecdote => anecdote.id !== id ? anecdote : changedAnecdote)
+    updateAnecdote(state, action) {
+      const id = action.payload.id
+      return state.map(anecdote => anecdote.id !== id ? anecdote : action.payload)
     },
     appendAnecdote(state, action) {
       state.push(action.payload)
@@ -45,7 +40,7 @@ const anecdoteSlice = createSlice({
   }
 })
 
-export const { toggleVote, appendAnecdote, setAnecdotes } = anecdoteSlice.actions
+export const { updateAnecdote, appendAnecdote, setAnecdotes } = anecdoteSlice.actions
 
 //initial load from json server database
 export const initializeAnecdotes = () => {
@@ -55,10 +50,23 @@ export const initializeAnecdotes = () => {
   }
 }
 
+//create new anecdote
 export const createAnecdote = content => {
   return async dispatch => {
     const newAnecdote = await anecdoteService.createNew(content)
     dispatch(appendAnecdote(newAnecdote))
+  }
+}
+
+//update vote toggle to database
+export const toggleVote = (anecdoteObject) => {
+  return async dispatch => {
+    const changedAnecdote = {
+      ...anecdoteObject,
+      votes: anecdoteObject.votes + 1
+    }
+    const updatedAnecdote = await anecdoteService.update(anecdoteObject.id, changedAnecdote)
+    dispatch(updateAnecdote(updatedAnecdote))
   }
 }
 
