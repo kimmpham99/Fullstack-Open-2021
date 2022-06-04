@@ -17,7 +17,7 @@ const AnecdoteList = () => {
     dispatch(toggleVote(anecdote))
 
     //update notification
-    dispatch(setNotification(`you voted '${anecdote.content}'`), 10)
+    dispatch(setNotification(`you voted '${anecdote.content}'`, 10))
 
     console.log('AnecdoteList.js: vote', anecdote)
   }
