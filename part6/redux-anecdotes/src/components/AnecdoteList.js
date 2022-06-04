@@ -2,6 +2,8 @@ import { toggleVote } from '../reducers/anecdoteReducer'
 import { useSelector, useDispatch } from 'react-redux'
 import { showNotification } from '../reducers/notificationReducer'
 
+import React from 'react'
+
 const AnecdoteList = () => {
   const anecdotes = useSelector(state => state.anecdotes)
   const filter = useSelector(state => state.filter)
