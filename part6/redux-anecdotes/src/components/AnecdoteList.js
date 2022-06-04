@@ -1,6 +1,6 @@
 import { toggleVote } from '../reducers/anecdoteReducer'
 import { useSelector, useDispatch } from 'react-redux'
-import { showNotification } from '../reducers/notificationReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
 import React from 'react'
 
@@ -13,13 +13,11 @@ const AnecdoteList = () => {
   const anecdoteToShow = anecdotes.filter(anecdote => (anecdote.content.toLowerCase()).includes(filter.toLowerCase()))
 
   const vote = (anecdote) => {
+    //update database
     dispatch(toggleVote(anecdote))
 
-    dispatch(showNotification(`you voted '${anecdote.content}'`))
-
-    setTimeout(() => {
-      dispatch(showNotification(''))
-    }, 5000);
+    //update notification
+    dispatch(setNotification(`you voted '${anecdote.content}'`), 10)
 
     console.log('AnecdoteList.js: vote', anecdote)
   }
