@@ -84,7 +84,9 @@ const CreateNew = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log(e)
+    //console.log(e)
+
+    if(e.target)
     props.addNew({
       content: content.value,
       author: author.value,
@@ -117,9 +119,9 @@ const CreateNew = (props) => {
           url for more info
           <input {...info} />
         </div>
-        <button type="submit">create</button>
+        <button type='submit'>create</button>
+        <button type='button' onClick={resetInputField}>reset</button>
       </form>
-      <button onClick={resetInputField}>reset</button>
     </div>
   )
 
