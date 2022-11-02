@@ -17,18 +17,17 @@ const useField = (type) => {
 
 const useCountry = (name) => {
   const [country, setCountry] = useState(null)
-  
+
   useEffect(() => {
     axios
-      .get('https://restcountries.com/v3.1/all')
-      .then(reponse => {
-        setCountry(reponse.data)
+      .get(`https://restcountries.com/v3.1/name/${name}?fullText=true`)
+      .then(response => {
+        setCountry(response.data[0])
       })
-  }, [])
+      .catch(err => { setCountry(null) })
+  }, [name])
 
-  const countryToShow = country.filter(c => (c.name.common.toLowerCase()).includes(name.toLowerCase()))
-
-  return countryToShow
+  return country
 }
 
 const Country = ({ country }) => {
