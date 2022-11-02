@@ -86,13 +86,13 @@ const CreateNew = (props) => {
     e.preventDefault()
     //console.log(e)
 
-    if(e.target)
-    props.addNew({
-      content: content.value,
-      author: author.value,
-      info: info.value,
-      votes: 0
-    })
+    if (e.target)
+      props.addNew({
+        content: content.value,
+        author: author.value,
+        info: info.value,
+        votes: 0
+      })
     navigate('/')
   }
 
@@ -100,6 +100,11 @@ const CreateNew = (props) => {
     content.clear()
     author.clear()
     info.clear()
+  }
+  
+  const omitSpread = (object) => {
+    const { clear, ...theRest } = object
+    return theRest
   }
 
   //<input name='info' value={info} onChange={(e) => setInfo(e.target.value)} />
@@ -109,15 +114,15 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input {...content} />
+          <input {...omitSpread(content)} />
         </div>
         <div>
           author
-          <input {...author} />
+          <input {...omitSpread(author)} />
         </div>
         <div>
           url for more info
-          <input {...info} />
+          <input {...omitSpread(info)} />
         </div>
         <button type='submit'>create</button>
         <button type='button' onClick={resetInputField}>reset</button>
